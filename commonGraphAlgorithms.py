@@ -348,7 +348,7 @@ class CommonGraphAlgorithms(object):
             return None
         if CommonGraphAlgorithms.is_cyclic_graph(graph_dict) or not CommonGraphAlgorithms.is_node_in_graph(graph_dict,
                                                                                                            source_node_id) or not CommonGraphAlgorithms.is_node_in_graph(
-                graph_dict, destination_node_id):
+            graph_dict, destination_node_id):
             return None
         if source_node_id == destination_node_id and CommonGraphAlgorithms.is_node_in_graph(graph_dict=graph_dict,
                                                                                             node_id=source_node_id):
@@ -415,27 +415,78 @@ class CommonGraphAlgorithms(object):
         return result
 
     @staticmethod
-    def get_sub_graph_node_ids(graph_dict, source_node_ids, destination_node_ids, include_source_node_ids=True, include_destination_node_ids=True):
+    def get_sub_graph_node_ids(graph_dict, source_node_ids, destination_node_ids, include_source_node_ids=True,
+                               include_destination_node_ids=True):
+        if CommonGraphAlgorithms.is_empty_graph(graph_dict):
+            return None
         sub_graph_nodes = set()
+        for source_node_id in source_node_ids:
+            if not CommonGraphAlgorithms.is_node_in_graph(graph_dict=graph_dict, node_id=source_node_id):
+                continue
+            for destination_node_id in destination_node_ids:
+                if not CommonGraphAlgorithms.is_node_in_graph(graph_dict=graph_dict, node_id=destination_node_id):
+                    continue
+                on_path_nodes = CommonGraphAlgorithms.get_all_nodes_encountered_while_traversing_directed_acyclic_graph(
+                    graph_dict=graph_dict, source_node_id=source_node_id, destination_node_id=destination_node_id,
+                    include_source_node_id=include_source_node_ids,
+                    include_destination_node_id=include_destination_node_ids)
+                if CommonValidators.is_empty(on_path_nodes):
+                    continue
+                for on_path_node in on_path_nodes:
+                    sub_graph_nodes.add(on_path_node)
+        result = list(sub_graph_nodes)
+        if CommonValidators.is_empty(result):
+            return []
+        return result
+
+    @staticmethod
+    def get_all_downstream_node_ids(graph_dict, source_node_ids, add_source_node_ids_to_returned_list=True):
+        if CommonGraphAlgorithms.is_empty_graph(graph_dict) or CommonValidators.is_empty(source_node_ids):
+            return None
+        all_downstream_node_ids = set()
+        to_explore_node_ids = list(set(source_node_ids))
+        already_explored_node_ids = set()
+
+        source_node_ids = set(source_node_ids)
+        while len(to_explore_node_ids) > 0:
+            current_node_id = to_explore_node_ids.pop(0)
+            if current_node_id in already_explored_node_ids:
+                continue
+            already_explored_node_ids.add(current_node_id)
+            current_node_children = CommonGraphAlgorithms.get_list_of_children_node_ids(graph_dict=graph_dict,
+                                                                                        query_node_id=current_node_id)
+            if not CommonValidators.is_empty(current_node_children):
+                for current_node_child_id in current_node_children:
+                    if current_node_child_id not in already_explored_node_ids:
+                        to_explore_node_ids.append(current_node_child_id)
+            if current_node_id in source_node_ids and not add_source_node_ids_to_returned_list:
+                continue
+            all_downstream_node_ids.add(current_node_id)
+
+        if CommonValidators.is_empty(all_downstream_node_ids):
+            return None
+        return list(all_downstream_node_ids)
 
 
-acyclic_graph_dict = {'a': ['b', 'c'], 'b': ['d'], 'c': ['e', 'd'], 'd': [], 'e': []}
-cyclic_graph_dict = {'a': ['b', 'c'], 'b': ['d'], 'c': ['e'], 'd': ['a'], 'e': []}
-
-print(CommonGraphAlgorithms.is_cyclic_graph(acyclic_graph_dict))
-print(CommonGraphAlgorithms.is_cyclic_graph(cyclic_graph_dict))
-print([(1, 2), (2, 3), (3, 4)].index((1, 2)))
-print(CommonGraphAlgorithms.topological_sort(acyclic_graph_dict))
-
-# elsa = 1
+# acyclic_graph_dict = {'a': ['b', 'c'], 'b': ['d'], 'c': ['e', 'd'], 'd': [], 'e': []}
+# cyclic_graph_dict = {'a': ['b', 'c'], 'b': ['d'], 'c': ['e'], 'd': ['a'], 'e': []}
 #
+# print(CommonGraphAlgorithms.is_cyclic_graph(acyclic_graph_dict))
+# print(CommonGraphAlgorithms.is_cyclic_graph(cyclic_graph_dict))
+# print([(1, 2), (2, 3), (3, 4)].index((1, 2)))
+# print(CommonGraphAlgorithms.topological_sort(acyclic_graph_dict))
 #
-# def m():
-#     nonlocal elsa
-#     elsa = 2
-#
-#
-# print(elsa)
-# print(m())
-# print(elsa)
-print(CommonGraphAlgorithms.get_all_nodes_encountered_while_traversing_directed_acyclic_graph(acyclic_graph_dict, 'a', 'd'))
+# # elsa = 1
+# #
+# #
+# # def m():
+# #     nonlocal elsa
+# #     elsa = 2
+# #
+# #
+# # print(elsa)
+# # print(m())
+# # print(elsa)
+# print(CommonGraphAlgorithms.get_all_nodes_encountered_while_traversing_directed_acyclic_graph(acyclic_graph_dict, 'a',
+#                                                                                               'd'))
+# print(CommonGraphAlgorithms.get_all_downstream_node_ids(acyclic_graph_dict, ['a', 'b'], False))
