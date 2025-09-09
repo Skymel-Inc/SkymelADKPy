@@ -18,7 +18,7 @@ import cv2
 import filetype
 import numpy as np
 
-import skymel_modelio_pb2
+from . import skymel_modelio_pb2
 
 
 def is_number(value):

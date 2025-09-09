@@ -1,5 +1,5 @@
-from skymel.commonUtils import maybe_get_length_of_object
-from skymel.commonValidators import CommonValidators
+from .commonUtils import maybe_get_length_of_object
+from .commonValidators import CommonValidators
 
 
 class CommonGraphAlgorithms(object):

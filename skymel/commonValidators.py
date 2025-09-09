@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 import numpy as np
 import validators
 
-from commonUtils import maybe_convert_bytes_to_string
+from .commonUtils import maybe_convert_bytes_to_string
 
 
 class CommonValidators(object):
