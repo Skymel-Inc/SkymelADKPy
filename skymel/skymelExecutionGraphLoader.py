@@ -4,6 +4,8 @@ from .commonValidators import CommonValidators
 from .skymelECGraphUtils import SkymelECGraphUtils
 from .skymelEcGraph import SkymelECGraph
 from .skymelECGraphNode import SkymelECGraphNode
+from .skymelECGraphNodeForDataProcessing import SkymelECGraphNodeForDataProcessing
+from .skymelECGraphNodeForExternalApiCall import SkymelECGraphNodeForExternalApiCall
 
 
 class SkymelExecutionGraphLoader:
@@ -164,31 +166,28 @@ class SkymelExecutionGraphLoader:
         if CommonValidators.is_empty(node_type) or CommonValidators.is_empty(node_initialization_config):
             return None
         
-        # For now, we support the base node type
-        # Additional specialized node types can be implemented later
+        # Support specialized node types
         if node_type == SkymelECGraphUtils.NODE_TYPE_BASE:
             return SkymelECGraphNode(node_initialization_config)
+        elif node_type == SkymelECGraphUtils.NODE_TYPE_DATA_PROCESSING:
+            return SkymelECGraphNodeForDataProcessing(node_initialization_config)
+        elif node_type == SkymelECGraphUtils.NODE_TYPE_EXTERNAL_API_CALLER:
+            return SkymelECGraphNodeForExternalApiCall(node_initialization_config)
         elif node_type == SkymelECGraphUtils.NODE_TYPE_LOCAL_INFERENCE_RUNNER:
             # Could implement SkymelECGraphNodeForLocalInference later
-            return SkymelECGraphNode(node_initialization_config)
+            return SkymelECGraphNodeForDataProcessing(node_initialization_config)
         elif node_type == SkymelECGraphUtils.NODE_TYPE_REMOTE_INFERENCE_RUNNER:
             # Could implement SkymelECGraphNodeForRemoteInference later
-            return SkymelECGraphNode(node_initialization_config)
-        elif node_type == SkymelECGraphUtils.NODE_TYPE_EXTERNAL_API_CALLER:
-            # Could implement SkymelECGraphNodeForExternalApiCall later
-            return SkymelECGraphNode(node_initialization_config)
+            return SkymelECGraphNodeForExternalApiCall(node_initialization_config)
         elif node_type == SkymelECGraphUtils.NODE_TYPE_TRANSFORMERJS_PROCESSOR:
             # Could implement SkymelECGraphNodeForTransformerJSProcessing later
-            return SkymelECGraphNode(node_initialization_config)
+            return SkymelECGraphNodeForDataProcessing(node_initialization_config)
         elif node_type == SkymelECGraphUtils.NODE_TYPE_LLM_INPUT_PREPARER:
             # Could implement SkymelECGraphNodeForLLMInputPrep later
-            return SkymelECGraphNode(node_initialization_config)
+            return SkymelECGraphNodeForDataProcessing(node_initialization_config)
         elif node_type == SkymelECGraphUtils.NODE_TYPE_LLM_OUTPUT_LOGITS_TO_TOKEN_ID_GREEDY_SEARCHER:
             # Could implement SkymelECGraphNodeForLLMLogitsGreedySearch later
-            return SkymelECGraphNode(node_initialization_config)
-        elif node_type == SkymelECGraphUtils.NODE_TYPE_DATA_PROCESSING:
-            # Could implement SkymelECGraphNodeForDataProcessing later
-            return SkymelECGraphNode(node_initialization_config)
+            return SkymelECGraphNodeForDataProcessing(node_initialization_config)
         else:
             return None
 

@@ -10,6 +10,8 @@ allowing you to create and manage AI agents with execution control graphs.
 from .skymelAgent import SkymelAgent
 from .skymelEcGraph import SkymelECGraph
 from .skymelECGraphNode import SkymelECGraphNode
+from .skymelECGraphNodeForDataProcessing import SkymelECGraphNodeForDataProcessing
+from .skymelECGraphNodeForExternalApiCall import SkymelECGraphNodeForExternalApiCall
 from .skymelExecutionGraphLoader import SkymelExecutionGraphLoader
 
 # Utility classes
@@ -23,6 +25,8 @@ __all__ = [
     'SkymelAgent',
     'SkymelECGraph', 
     'SkymelECGraphNode',
+    'SkymelECGraphNodeForDataProcessing',
+    'SkymelECGraphNodeForExternalApiCall',
     'SkymelExecutionGraphLoader',
     'SkymelECGraphUtils',
     'CommonValidators',

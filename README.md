@@ -16,7 +16,9 @@ This library allows you to:
 
 - **`SkymelAgent`** - Main entry point for creating AI agents
 - **`SkymelECGraph`** - Execution control graph for managing workflows
-- **`SkymelECGraphNode`** - Individual nodes in execution graphs
+- **`SkymelECGraphNode`** - Base class for individual nodes in execution graphs
+- **`SkymelECGraphNodeForDataProcessing`** - Base class for data processing nodes
+- **`SkymelECGraphNodeForExternalApiCall`** - Node for making external API calls
 - **`SkymelExecutionGraphLoader`** - Utilities for loading graphs from JSON
 
 ### Utility Classes
@@ -122,6 +124,58 @@ json_config = {
 graph = SkymelExecutionGraphLoader.load_graph_from_json_object(json_config)
 ```
 
+### Using External API Call Nodes
+
+```python
+from skymel import SkymelECGraphNodeForExternalApiCall, SkymelECGraph
+
+# Create external API call node
+api_config = {
+    'nodeId': 'openai_node',
+    'nodeInputNames': ['external.prompt'],
+    'nodeOutputNames': ['response'],
+    'endpointUrl': 'https://api.openai.com/v1/chat/completions',
+    'apiKey': 'your-api-key',
+    'nodeInputNameToBackendInputNameMap': {
+        'external.prompt': 'messages'
+    },
+    'backendOutputNameToNodeOutputNameMap': {
+        'choices': 'openai_node.response'
+    },
+    'nodePrivateAttributesAndValues': {
+        'model': 'gpt-3.5-turbo',
+        'temperature': 0.7
+    }
+}
+
+api_node = SkymelECGraphNodeForExternalApiCall(api_config)
+
+# Add to graph and execute
+graph = SkymelECGraph({'graphId': 'api_graph', 'externalInputNames': ['external.prompt']})
+graph.add_node(api_node)
+```
+
+### Creating Custom Data Processing Nodes
+
+```python
+from skymel import SkymelECGraphNodeForDataProcessing
+
+class CustomProcessor(SkymelECGraphNodeForDataProcessing):
+    def process_data(self, input_data):
+        # Custom processing logic
+        text = input_data.get('external.text', '')
+        return {'processed': text.upper()}
+
+# Use in graph
+processor_config = {
+    'nodeId': 'custom_processor',
+    'nodeInputNames': ['external.text'],
+    'nodeOutputNames': ['processed']
+}
+
+processor = CustomProcessor(processor_config)
+```
+
 ## Features Implemented
 
 ✅ **Core Graph Functionality**
@@ -147,6 +201,12 @@ graph = SkymelExecutionGraphLoader.load_graph_from_json_object(json_config)
 - Node type validation
 - Configuration validation utilities
 
+✅ **Specialized Node Types**
+- Data processing base class with validation and formatting
+- External API call nodes with HTTP/WebSocket support
+- Input/output mapping for API integration
+- Retry logic and error handling for API calls
+
 ✅ **Utility Functions**
 - Graph algorithms (DFS, topological sort, cycle detection)
 - Data validation (types, formats, structures)
@@ -163,7 +223,7 @@ graph = SkymelExecutionGraphLoader.load_graph_from_json_object(json_config)
 | Graph Execution | ✅ | ✅ | Complete |
 | JSON Loading | ✅ | ✅ | Complete |
 | File Processing | ✅ | ✅ | Complete |
-| Specialized Nodes | ✅ | ⚠️ | Base nodes only |
+| Specialized Nodes | ✅ | ✅ | Data processing & API call nodes |
 | WebSocket Support | ✅ | ⚠️ | Needs HTTP client |
 | Model Runners | ✅ | ❌ | Not implemented |
 
