@@ -38,6 +38,24 @@ sys.path.append('/path/to/skymel')
 from skymel import SkymelAgent, SkymelECGraph
 ```
 
+### Optional Dependencies
+
+For full functionality, install these optional packages:
+
+```bash
+# For HTTP API calls
+pip install aiohttp
+
+# For WebSocket API calls  
+pip install websockets
+
+# For image processing (if using image utilities)
+pip install opencv-python
+
+# For data validation
+pip install validators
+```
+
 ## Basic Usage
 
 ### Creating an Agent
@@ -203,7 +221,7 @@ processor = CustomProcessor(processor_config)
 
 ✅ **Specialized Node Types**
 - Data processing base class with validation and formatting
-- External API call nodes with HTTP/WebSocket support
+- External API call nodes with HTTP/WebSocket support (via aiohttp and websockets packages)
 - Input/output mapping for API integration
 - Retry logic and error handling for API calls
 
@@ -224,7 +242,7 @@ processor = CustomProcessor(processor_config)
 | JSON Loading | ✅ | ✅ | Complete |
 | File Processing | ✅ | ✅ | Complete |
 | Specialized Nodes | ✅ | ✅ | Data processing & API call nodes |
-| WebSocket Support | ✅ | ⚠️ | Needs HTTP client |
+| WebSocket Support | ✅ | ✅ | Via websockets package |
 | Model Runners | ✅ | ❌ | Not implemented |
 
 ## Extending the Library
